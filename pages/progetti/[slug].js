@@ -1,0 +1,155 @@
+import { useState, useEffect, useRef } from 'react';
+import Head from 'next/head';
+import Link from 'next/link';
+import { PROJECTS } from '../../data/projects';
+
+/* ─── Cursor (leggero) ───────────────────────────────────────────────────── */
+function Cursor() {
+  const dot  = useRef(null);
+  const ring = useRef(null);
+  const pos  = useRef({ x: 0, y: 0 });
+  const rp   = useRef({ x: 0, y: 0 });
+  const raf  = useRef(null);
+
+  useEffect(() => {
+    const move = ({ clientX: x, clientY: y }) => {
+      pos.current = { x, y };
+      if (dot.current) { dot.current.style.left = x + 'px'; dot.current.style.top = y + 'px'; }
+    };
+    const tick = () => {
+      rp.current.x += (pos.current.x - rp.current.x) * .12;
+      rp.current.y += (pos.current.y - rp.current.y) * .12;
+      if (ring.current) { ring.current.style.left = rp.current.x + 'px'; ring.current.style.top = rp.current.y + 'px'; }
+      raf.current = requestAnimationFrame(tick);
+    };
+    raf.current = requestAnimationFrame(tick);
+    document.addEventListener('mousemove', move);
+    return () => { document.removeEventListener('mousemove', move); cancelAnimationFrame(raf.current); };
+  }, []);
+
+  return (
+    <>
+      <div className="cur-dot"  ref={dot} />
+      <div className="cur-ring" ref={ring} />
+    </>
+  );
+}
+
+/* ─── Reveal ─────────────────────────────────────────────────────────────── */
+function useReveal() {
+  useEffect(() => {
+    const io = new IntersectionObserver(
+      es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } }),
+      { threshold: 0.08 }
+    );
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+}
+
+/* ─── Static generation ─────────────────────────────────────────────────── */
+export function getStaticPaths() {
+  return {
+    paths: PROJECTS.map(p => ({ params: { slug: p.slug } })),
+    fallback: false,
+  };
+}
+
+export function getStaticProps({ params }) {
+  const idx  = PROJECTS.findIndex(p => p.slug === params.slug);
+  const prev = idx > 0                   ? PROJECTS[idx - 1] : null;
+  const next = idx < PROJECTS.length - 1 ? PROJECTS[idx + 1] : null;
+  return { props: { project: PROJECTS[idx], prev, next } };
+}
+
+/* ─── Page ───────────────────────────────────────────────────────────────── */
+export default function ProgettoPage({ project, prev, next }) {
+  useReveal();
+
+  return (
+    <>
+      <Head>
+        <title>{project.title} — Alessandro Naldoni</title>
+        <meta name="description" content={project.description} />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+
+      <div className="page-wrap">
+        {/* ─ Navbar ─ */}
+        <nav className="proj-nav">
+          <Link className="proj-back" href="/#portfolio">
+            <svg width="16" height="10" viewBox="0 0 16 10" fill="none">
+              <path d="M6 1L1 5M1 5L6 9M1 5H15" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span>Portfolio</span>
+          </Link>
+          <Link href="/" style={{ fontFamily: 'var(--f-title)', fontSize: 17, fontWeight: 400, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--black)' }}>
+            Alessandro Naldoni
+          </Link>
+          <Link href="/#contatti" style={{ fontSize: 10, fontWeight: 500, letterSpacing: '.2em', textTransform: 'uppercase', color: 'var(--grey)', borderBottom: '1px solid var(--border)', paddingBottom: 2 }}>
+            Contattami
+          </Link>
+        </nav>
+
+        {/* ─ Header ─ */}
+        <div className="proj-header">
+          <div className="proj-meta reveal">
+            <span className="proj-cat">{project.category}</span>
+          </div>
+          <h1 className="proj-title reveal d1">{project.title}</h1>
+          <p className="proj-desc reveal d2">{project.description}</p>
+        </div>
+
+        {/* ─ Gallery ─ */}
+        <div className="proj-gallery">
+          {project.images.map((src, i) => {
+            const feature = i === 0 || i % 6 === 5; // apertura + stacchi a tutta larghezza
+            return (
+              <div
+                key={i}
+                className={`gimg reveal${feature ? ' g-feature' : ''}`}
+                style={{ transitionDelay: `${(i % 2) * 0.08}s` }}
+              >
+                <span className="gimg-idx">{String(i + 1).padStart(2, '0')}</span>
+                <img
+                  src={src}
+                  alt={`${project.title} — ${i + 1}`}
+                  loading={i < 2 ? 'eager' : 'lazy'}
+                />
+              </div>
+            );
+          })}
+        </div>
+
+        {/* ─ Prev / Next ─ */}
+        <div className="proj-pn">
+          {prev ? (
+            <Link className="pn-link" href={`/progetti/${prev.slug}`}>
+              <div className="pn-lbl">← Precedente</div>
+              <div className="pn-name">{prev.title}</div>
+            </Link>
+          ) : <div />}
+
+          <Link className="pn-center" href="/#portfolio" title="Tutti i Progetti">⊞</Link>
+
+          {next ? (
+            <Link className="pn-link" href={`/progetti/${next.slug}`} style={{ textAlign: 'right' }}>
+              <div className="pn-lbl">Successivo →</div>
+              <div className="pn-name">{next.title}</div>
+            </Link>
+          ) : <div />}
+        </div>
+
+        {/* ─ Footer ─ */}
+        <footer className="footer">
+          <div className="footer-name">Alessandro <span>Naldoni</span></div>
+          <div className="footer-copy">© {new Date().getFullYear()}</div>
+          <div className="footer-links">
+            <a href="https://instagram.com/alessandronaldoniphoto" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="mailto:studio@alessandronaldoniphoto.it">Email</a>
+          </div>
+        </footer>
+      </div>
+    </>
+  );
+}
