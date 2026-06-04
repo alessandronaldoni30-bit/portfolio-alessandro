@@ -1,50 +1,73 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { PROJECTS } from '../../data/projects';
-
-/* ─── Cursor (leggero) ───────────────────────────────────────────────────── */
-function Cursor() {
-  const dot  = useRef(null);
-  const ring = useRef(null);
-  const pos  = useRef({ x: 0, y: 0 });
-  const rp   = useRef({ x: 0, y: 0 });
-  const raf  = useRef(null);
-
-  useEffect(() => {
-    const move = ({ clientX: x, clientY: y }) => {
-      pos.current = { x, y };
-      if (dot.current) { dot.current.style.left = x + 'px'; dot.current.style.top = y + 'px'; }
-    };
-    const tick = () => {
-      rp.current.x += (pos.current.x - rp.current.x) * .12;
-      rp.current.y += (pos.current.y - rp.current.y) * .12;
-      if (ring.current) { ring.current.style.left = rp.current.x + 'px'; ring.current.style.top = rp.current.y + 'px'; }
-      raf.current = requestAnimationFrame(tick);
-    };
-    raf.current = requestAnimationFrame(tick);
-    document.addEventListener('mousemove', move);
-    return () => { document.removeEventListener('mousemove', move); cancelAnimationFrame(raf.current); };
-  }, []);
-
-  return (
-    <>
-      <div className="cur-dot"  ref={dot} />
-      <div className="cur-ring" ref={ring} />
-    </>
-  );
-}
 
 /* ─── Reveal ─────────────────────────────────────────────────────────────── */
 function useReveal() {
   useEffect(() => {
     const io = new IntersectionObserver(
       es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } }),
-      { threshold: 0.08 }
+      { threshold: 0.06 }
     );
     document.querySelectorAll('.reveal').forEach(el => io.observe(el));
     return () => io.disconnect();
   }, []);
+}
+
+/* ─── Lightbox (ingrandimento a schermo intero) ──────────────────────────── */
+function Lightbox({ images, index, title, onClose, onPrev, onNext }) {
+  const touchX = useRef(null);
+
+  useEffect(() => {
+    const onKey = e => {
+      if (e.key === 'Escape') onClose();
+      else if (e.key === 'ArrowLeft') onPrev();
+      else if (e.key === 'ArrowRight') onNext();
+    };
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
+  }, [onClose, onPrev, onNext]);
+
+  const onTouchStart = e => { touchX.current = e.touches[0].clientX; };
+  const onTouchEnd = e => {
+    if (touchX.current == null) return;
+    const dx = e.changedTouches[0].clientX - touchX.current;
+    if (dx > 50) onPrev();
+    else if (dx < -50) onNext();
+    touchX.current = null;
+  };
+
+  return (
+    <div className="lb" onClick={onClose} role="dialog" aria-modal="true">
+      <button className="lb-close" onClick={onClose} aria-label="Chiudi">×</button>
+      <button
+        className="lb-nav lb-prev"
+        onClick={e => { e.stopPropagation(); onPrev(); }}
+        aria-label="Precedente"
+      >‹</button>
+
+      <div
+        className="lb-stage"
+        onClick={e => e.stopPropagation()}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
+        <img key={index} src={images[index]} alt={`${title} — ${index + 1}`} />
+      </div>
+
+      <button
+        className="lb-nav lb-next"
+        onClick={e => { e.stopPropagation(); onNext(); }}
+        aria-label="Successivo"
+      >›</button>
+
+      <div className="lb-counter">
+        {String(index + 1).padStart(2, '0')} / {String(images.length).padStart(2, '0')}
+      </div>
+    </div>
+  );
 }
 
 /* ─── Static generation ─────────────────────────────────────────────────── */
@@ -65,12 +88,19 @@ export function getStaticProps({ params }) {
 /* ─── Page ───────────────────────────────────────────────────────────────── */
 export default function ProgettoPage({ project, prev, next }) {
   useReveal();
+  const [lb, setLb] = useState(null);
+  const total = project.images.length;
+
+  const open  = i => setLb(i);
+  const close = useCallback(() => setLb(null), []);
+  const goPrev = useCallback(() => setLb(i => (i - 1 + total) % total), [total]);
+  const goNext = useCallback(() => setLb(i => (i + 1) % total), [total]);
 
   return (
     <>
       <Head>
         <title>{project.title} — Alessandro Naldoni</title>
-        <meta name="description" content={project.description} />
+        <meta name="description" content={`${project.title} — ${project.category}. Portfolio di Alessandro Naldoni.`} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
@@ -97,26 +127,32 @@ export default function ProgettoPage({ project, prev, next }) {
             <span className="proj-cat">{project.category}</span>
           </div>
           <h1 className="proj-title reveal d1">{project.title}</h1>
-          <p className="proj-desc reveal d2">{project.description}</p>
+          <p className="proj-desc reveal d2">
+            {total} scatti — clicca un'immagine per ingrandirla.
+          </p>
         </div>
 
         {/* ─ Gallery ─ */}
         <div className="proj-gallery">
           {project.images.map((src, i) => {
-            const feature = i === 0 || i % 6 === 5; // apertura + stacchi a tutta larghezza
+            const feature = i === 0 || i % 6 === 5;
             return (
-              <div
+              <button
                 key={i}
+                type="button"
                 className={`gimg reveal${feature ? ' g-feature' : ''}`}
-                style={{ transitionDelay: `${(i % 2) * 0.08}s` }}
+                style={{ transitionDelay: `${(i % 2) * 0.07}s` }}
+                onClick={() => open(i)}
+                aria-label={`Ingrandisci immagine ${i + 1}`}
               >
                 <span className="gimg-idx">{String(i + 1).padStart(2, '0')}</span>
+                <span className="gimg-zoom" aria-hidden="true">⤢</span>
                 <img
                   src={src}
                   alt={`${project.title} — ${i + 1}`}
                   loading={i < 2 ? 'eager' : 'lazy'}
                 />
-              </div>
+              </button>
             );
           })}
         </div>
@@ -150,6 +186,17 @@ export default function ProgettoPage({ project, prev, next }) {
           </div>
         </footer>
       </div>
+
+      {lb !== null && (
+        <Lightbox
+          images={project.images}
+          index={lb}
+          title={project.title}
+          onClose={close}
+          onPrev={goPrev}
+          onNext={goNext}
+        />
+      )}
     </>
   );
 }
