@@ -18,6 +18,19 @@ function useReveal() {
 /* ─── Lightbox (ingrandimento a schermo intero) ──────────────────────────── */
 function Lightbox({ images, index, title, onClose, onPrev, onNext }) {
   const touchX = useRef(null);
+  const [loaded, setLoaded] = useState(false);
+
+  // reset lo stato di caricamento quando cambia immagine
+  useEffect(() => { setLoaded(false); }, [index]);
+
+  // precarica l'immagine precedente e successiva
+  useEffect(() => {
+    const total = images.length;
+    [(index + 1) % total, (index - 1 + total) % total].forEach(i => {
+      const img = new Image();
+      img.src = images[i];
+    });
+  }, [index, images]);
 
   useEffect(() => {
     const onKey = e => {
@@ -54,7 +67,14 @@ function Lightbox({ images, index, title, onClose, onPrev, onNext }) {
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        <img key={index} src={images[index]} alt={`${title} — ${index + 1}`} />
+        {!loaded && <span className="lb-spinner" aria-hidden="true" />}
+        <img
+          key={index}
+          src={images[index]}
+          alt={`${title} — ${index + 1}`}
+          onLoad={() => setLoaded(true)}
+          style={{ opacity: loaded ? 1 : 0 }}
+        />
       </div>
 
       <button
