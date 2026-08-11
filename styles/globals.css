@@ -598,6 +598,21 @@ button { border: none; background: none; font-family: var(--f-body); }
   transition: background .3s;
 }
 .cf-submit:hover { background: var(--gold); }
+.cf-submit:disabled { opacity: .6; cursor: default; }
+
+/* Honeypot: fuori dallo schermo, invisibile agli utenti reali */
+.cf-hp {
+  position: absolute !important;
+  left: -9999px !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+}
+
+/* Messaggi di stato del form */
+.cf-msg { margin: 4px 0 0; font-size: 13px; line-height: 1.5; }
+.cf-ok  { color: var(--gold); }
+.cf-err { color: #b23b3b; }
+.cf-err a { color: inherit; text-decoration: underline; }
 
 /* ─── FOOTER ─── */
 .footer {

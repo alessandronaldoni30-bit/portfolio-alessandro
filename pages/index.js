@@ -382,32 +382,28 @@ function VideoSec() {
 }
 
 /* ─── Contact ─────────────────────────────────────────────────────────────── */
-const FORM_ENDPOINT = 'https://formsubmit.co/ajax/studio@alessandronaldoniphoto.it';
-
 function Contact() {
-  const [f, setF]         = useState({ name: '', email: '', message: '' });
+  const [f, setF]         = useState({ name: '', email: '', message: '', website: '' });
   const [status, setStatus] = useState('idle'); // idle | sending | ok | error
   const change = e => setF({ ...f, [e.target.name]: e.target.value });
   const submit = async e => {
     e.preventDefault();
     setStatus('sending');
     try {
-      const res = await fetch(FORM_ENDPOINT, {
+      const res = await fetch('/api/contatti', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: f.name,
           email: f.email,
           message: f.message,
-          _subject: `Nuovo contatto dal sito — ${f.name}`,
-          _template: 'table',
-          _captcha: 'false',
+          website: f.website, // honeypot
         }),
       });
-      if (res.ok) {
+      const data = await res.json().catch(() => ({ ok: false }));
+      if (res.ok && data.ok) {
         setStatus('ok');
-        setF({ name: '', email: '', message: '' });
-        setTimeout(() => setStatus('idle'), 6000);
+        setF({ name: '', email: '', message: '', website: '' });
       } else {
         setStatus('error');
       }
@@ -448,23 +444,43 @@ function Contact() {
           <div className="cf-row">
             <div>
               <label className="cf-label">Nome</label>
-              <input className="cf-input" name="name" value={f.name} onChange={change} required placeholder="Il tuo nome" />
+              <input className="cf-input" name="name" value={f.name} onChange={change} required maxLength={100} placeholder="Il tuo nome" />
             </div>
             <div>
               <label className="cf-label">Email</label>
-              <input className="cf-input" type="email" name="email" value={f.email} onChange={change} required placeholder="La tua email" />
+              <input className="cf-input" type="email" name="email" value={f.email} onChange={change} required maxLength={200} placeholder="La tua email" />
             </div>
           </div>
           <div>
             <label className="cf-label">Messaggio</label>
-            <textarea className="cf-area" name="message" value={f.message} onChange={change} required placeholder="Raccontami il tuo progetto..." />
+            <textarea className="cf-area" name="message" value={f.message} onChange={change} required maxLength={5000} placeholder="Raccontami il tuo progetto..." />
           </div>
+
+          {/* Honeypot anti-spam: nascosto agli utenti, visibile solo ai bot */}
+          <div className="cf-hp" aria-hidden="true">
+            <label>Non compilare questo campo
+              <input type="text" name="website" tabIndex={-1} autoComplete="off" value={f.website} onChange={change} />
+            </label>
+          </div>
+
           <button type="submit" className="cf-submit" disabled={status === 'sending'}>
             {status === 'sending' ? 'Invio…'
               : status === 'ok' ? '✓ Inviato'
-              : status === 'error' ? 'Errore — riprova'
+              : status === 'error' ? 'Riprova'
               : 'Invia Messaggio'}
           </button>
+
+          {status === 'ok' && (
+            <p className="cf-msg cf-ok" role="status">
+              Messaggio ricevuto, ti rispondo entro 24 ore.
+            </p>
+          )}
+          {status === 'error' && (
+            <p className="cf-msg cf-err" role="alert">
+              Qualcosa è andato storto. Scrivimi direttamente a{' '}
+              <a href="mailto:studio@alessandronaldoniphoto.it">studio@alessandronaldoniphoto.it</a>.
+            </p>
+          )}
         </form>
       </div>
     </section>
