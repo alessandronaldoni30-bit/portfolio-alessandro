@@ -1,7 +1,9 @@
 import { Resend } from 'resend';
 
 /* ─── Config ──────────────────────────────────────────────────────────────── */
-const TO_EMAIL   = 'studio@alessandronaldoniphoto.it';
+// Destinatario. Di default lo studio; sovrascrivibile con CONTACT_TO in .env.local
+// (utile in modalità test Resend, dove si può consegnare solo alla mail dell'account).
+const TO_EMAIL   = process.env.CONTACT_TO || 'studio@alessandronaldoniphoto.it';
 // Mittente: deve appartenere a un dominio verificato su Resend.
 // Sovrascrivibile con FROM_EMAIL in .env.local (es. "Sito <no-reply@alessandronaldoniphoto.it>").
 const FROM_EMAIL = process.env.FROM_EMAIL || 'Sito Alessandro Naldoni <no-reply@alessandronaldoniphoto.it>';
