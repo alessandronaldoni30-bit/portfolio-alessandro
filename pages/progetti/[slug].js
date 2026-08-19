@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import Head from 'next/head';
 import Link from 'next/link';
 import { PROJECTS } from '../../data/projects';
@@ -52,7 +53,11 @@ function Lightbox({ images, index, title, onClose, onPrev, onNext }) {
     touchX.current = null;
   };
 
-  return (
+  // Renderizzato in document.body (fuori da .route-fade) così il position:fixed
+  // resta ancorato allo schermo e non a un contenitore trasformato.
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
     <div className="lb" onClick={onClose} role="dialog" aria-modal="true">
       <button className="lb-close" onClick={onClose} aria-label="Chiudi">×</button>
       <button
@@ -86,7 +91,8 @@ function Lightbox({ images, index, title, onClose, onPrev, onNext }) {
       <div className="lb-counter">
         {String(index + 1).padStart(2, '0')} / {String(images.length).padStart(2, '0')}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

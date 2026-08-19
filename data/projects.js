@@ -606,7 +606,7 @@ export const SERVICES = [
 ];
 
 export const CLIENTS = [
-  'Vogue Italia', "Harper's Bazaar", 'Fashion Week', 'Sanremo Festival',
+  'Fashion Week', 'Sanremo Festival',
   'MALVIE Magazine', 'Studio Creativo', 'Brand Agency', 'Model Agency',
   'Editorial Press', 'Event Co.', 'Beauty Brand', 'Atelier Mode',
 ];
