@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { PROJECTS, HERO_IMAGES, ABOUT_IMAGE, SERVICES, CLIENTS, TESTIMONIALS } from '../data/projects';
+import { img, srcSet, dims } from '../data/img';
 
 /* ─── Cursor ──────────────────────────────────────────────────────────────── */
 function Cursor() {
@@ -130,6 +131,12 @@ function Navbar({ solid }) {
 function Hero() {
   const [cur, setCur] = useState(0);
   const slides = HERO_IMAGES.length ? HERO_IMAGES : PROJECTS.slice(0, 5).map(p => p.cover);
+  // Scarica solo la slide corrente e la successiva, non tutte insieme
+  const [ready, setReady] = useState(() => new Set([0]));
+  useEffect(() => {
+    const t = setTimeout(() => setReady(r => new Set([...r, cur, (cur + 1) % slides.length])), cur === 0 ? 2500 : 0);
+    return () => clearTimeout(t);
+  }, [cur, slides.length]);
 
   // Auto advance
   useEffect(() => {
@@ -143,11 +150,14 @@ function Hero() {
       <div className="hero-slides">
         {slides.map((src, i) => (
           <div key={src} className={`hero-slide${i === cur ? ' active' : ''}`}>
-            <img
-              src={src}
-              alt=""
-              loading={i === 0 ? 'eager' : 'lazy'}
-            />
+            {ready.has(i) && (
+              <img
+                src={img(src, 1600)}
+                alt=""
+                fetchPriority={i === 0 ? 'high' : 'low'}
+                decoding="async"
+              />
+            )}
           </div>
         ))}
       </div>
@@ -186,7 +196,10 @@ function Intro() {
         <div className="intro-left reveal">
           <div className="intro-photo">
             <img
-              src={ABOUT_IMAGE}
+              src={img(ABOUT_IMAGE, 800)}
+              {...dims(ABOUT_IMAGE)}
+              loading="lazy"
+              decoding="async"
               alt="Alessandro Naldoni"
               onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
@@ -244,9 +257,13 @@ function Portfolio() {
               style={{ transitionDelay: `${(i % 3) * 0.09}s` }}
             >
               <img
-                src={p.cover}
+                src={img(p.cover, 800)}
+                srcSet={srcSet(p.cover)}
+                sizes="(max-width: 768px) 100vw, (max-width: 1100px) 50vw, 33vw"
+                {...dims(p.cover)}
                 alt={p.title}
-                loading={i < 3 ? 'eager' : 'lazy'}
+                loading="lazy"
+                decoding="async"
               />
               <div className="p-overlay">
                 <div className="p-cat">{p.category}</div>
@@ -432,9 +449,6 @@ function Contact() {
           <a className="contact-link" href="https://instagram.com/alessandronaldoniphoto" target="_blank" rel="noopener noreferrer">
             Instagram →
           </a>
-          <a className="contact-link" href="https://alessandronaldoniphoto.it" target="_blank" rel="noopener noreferrer">
-            Sito Web →
-          </a>
           <span className="contact-link" style={{ color: 'var(--grey-light)', pointerEvents: 'none' }}>
             Cotignola, Ravenna
           </span>
@@ -517,6 +531,12 @@ export default function Home() {
         <title>Alessandro Naldoni — Photographer &amp; Filmmaker</title>
         <meta name="description" content="Fotografo professionista specializzato in moda, ritratto ed eventi. Cotignola, Ravenna." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="canonical" href="https://www.alessandronaldoniphoto.it/" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Alessandro Naldoni — Photographer & Filmmaker" />
+        <meta property="og:description" content="Fotografo professionista specializzato in moda, ritratto ed eventi. Cotignola, Ravenna." />
+        <meta property="og:url" content="https://www.alessandronaldoniphoto.it/" />
+        <meta property="og:image" content={`https://www.alessandronaldoniphoto.it${HERO_IMAGES[0] || PROJECTS[0].cover}`} />
       </Head>
 
       <div className="page-wrap">

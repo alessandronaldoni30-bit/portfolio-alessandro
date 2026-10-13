@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import Head from 'next/head';
 import Link from 'next/link';
 import { PROJECTS } from '../../data/projects';
+import { img, srcSet, dims } from '../../data/img';
 
 /* ─── Reveal ─────────────────────────────────────────────────────────────── */
 function useReveal() {
@@ -28,8 +29,8 @@ function Lightbox({ images, index, title, onClose, onPrev, onNext }) {
   useEffect(() => {
     const total = images.length;
     [(index + 1) % total, (index - 1 + total) % total].forEach(i => {
-      const img = new Image();
-      img.src = images[i];
+      const pre = new Image();
+      pre.src = img(images[i], 1600);
     });
   }, [index, images]);
 
@@ -75,7 +76,7 @@ function Lightbox({ images, index, title, onClose, onPrev, onNext }) {
         {!loaded && <span className="lb-spinner" aria-hidden="true" />}
         <img
           key={index}
-          src={images[index]}
+          src={img(images[index], 1600)}
           alt={`${title} — ${index + 1}`}
           onLoad={() => setLoaded(true)}
           style={{ opacity: loaded ? 1 : 0 }}
@@ -128,6 +129,9 @@ export default function ProgettoPage({ project, prev, next }) {
         <title>{project.title} — Alessandro Naldoni</title>
         <meta name="description" content={`${project.title} — ${project.category}. Portfolio di Alessandro Naldoni.`} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="canonical" href={`https://www.alessandronaldoniphoto.it/progetti/${project.slug}`} />
+        <meta property="og:title" content={`${project.title} — Alessandro Naldoni`} />
+        <meta property="og:image" content={`https://www.alessandronaldoniphoto.it${project.cover}`} />
       </Head>
 
       <div className="page-wrap">
@@ -174,9 +178,14 @@ export default function ProgettoPage({ project, prev, next }) {
                 <span className="gimg-idx">{String(i + 1).padStart(2, '0')}</span>
                 <span className="gimg-zoom" aria-hidden="true">⤢</span>
                 <img
-                  src={src}
+                  src={img(src, feature ? 1600 : 800)}
+                  srcSet={srcSet(src)}
+                  sizes={feature ? '(max-width: 1400px) 100vw, 1400px' : '(max-width: 760px) 50vw, (max-width: 1024px) 50vw, 33vw'}
+                  {...dims(src)}
                   alt={`${project.title} — ${i + 1}`}
                   loading={i < 2 ? 'eager' : 'lazy'}
+                  fetchPriority={i === 0 ? 'high' : 'auto'}
+                  decoding="async"
                 />
               </button>
             );
