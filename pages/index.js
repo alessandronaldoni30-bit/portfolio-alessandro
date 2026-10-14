@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { PROJECTS, HERO_IMAGES, ABOUT_IMAGE, SERVICES, CLIENTS, TESTIMONIALS } from '../data/projects';
+import { PROJECTS, HERO_IMAGES, ABOUT_IMAGE, SERVICES, CLIENTS } from '../data/projects';
 import { img, srcSet, dims } from '../data/img';
 
 /* ─── Cursor ──────────────────────────────────────────────────────────────── */
@@ -94,7 +94,7 @@ function useReveal() {
 /* ─── Navbar ──────────────────────────────────────────────────────────────── */
 function Navbar({ solid }) {
   const [open, setOpen] = useState(false);
-  const links = ['Portfolio', 'Servizi', 'Recensioni', 'Video', 'Contatti'];
+  const links = ['Portfolio', 'Servizi', 'Video', 'Contatti'];
 
   // Blocca lo scroll del body quando il menu mobile è aperto
   useEffect(() => {
@@ -318,31 +318,6 @@ function Clients() {
   );
 }
 
-/* ─── Reviews ─────────────────────────────────────────────────────────────── */
-function Reviews() {
-  return (
-    <section className="reviews section-pad" id="recensioni">
-      <div className="inner">
-        <div className="reveal" style={{ textAlign: 'center' }}>
-          <div className="s-label" style={{ justifyContent: 'center' }}>Recensioni</div>
-          <h2 className="s-title">Cosa dicono <em>di me</em></h2>
-        </div>
-        <div className="reviews-grid">
-          {TESTIMONIALS.map((t, i) => (
-            <div key={i} className={`review-item reveal d${i + 1}`}>
-              <div className="review-open">"</div>
-              <p className="review-text">{t.quote}</p>
-              <div className="review-divider" />
-              <div className="review-author">{t.author}</div>
-              <div className="review-role">{t.role}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 /* ─── Video ───────────────────────────────────────────────────────────────── */
 function VideoSec() {
   const [url, setUrl] = useState('');
@@ -547,7 +522,6 @@ export default function Home() {
           <Portfolio />
           <Services />
           <Clients />
-          <Reviews />
           <VideoSec />
           <Contact />
         </main>

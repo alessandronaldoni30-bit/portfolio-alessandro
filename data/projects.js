@@ -539,21 +539,3 @@ export const CLIENTS = [
   'MALVIE Magazine', 'Studio Creativo', 'Brand Agency', 'Model Agency',
   'Editorial Press', 'Event Co.', 'Beauty Brand', 'Atelier Mode',
 ];
-
-export const TESTIMONIALS = [
-  {
-    quote: 'Alessandro ha catturato l\'essenza del nostro shooting con una sensibilità rara. Ogni scatto racconta una storia vera, ogni immagine è un momento che riviviamo con emozione.',
-    author: 'Giulia & Marco',
-    role: 'Sposi, Ravenna 2024',
-  },
-  {
-    quote: 'Professionalità assoluta e visione artistica straordinaria. Il mio book è uscito esattamente come lo immaginavo — anzi, meglio.',
-    author: 'Nicole V.',
-    role: 'Modella',
-  },
-  {
-    quote: 'Sa interpretare la vision del cliente con creatività e precisione. Un collaboratore prezioso, con un occhio che non si improvvisa.',
-    author: 'Studio Creativo FORM',
-    role: 'Agenzia, Milano',
-  },
-];
