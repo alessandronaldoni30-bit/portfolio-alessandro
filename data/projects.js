@@ -531,11 +531,8 @@ export const SERVICES = [
   { icon: '◇', title: 'Wedding & Couples', desc: 'Matrimoni e shooting di coppia in stile documentale.' },
   { icon: '▷', title: 'Video & Reels', desc: 'Contenuti video per brand, social e campagne advertising.' },
   { icon: '✦', title: 'Events & Beauty', desc: 'Copertura di eventi, sfilate e shooting beauty.' },
-  { icon: '⌂', title: 'Real Estate', desc: 'Fotografia immobiliare di pregio per valorizzare ogni spazio.' },
 ];
 
 export const CLIENTS = [
-  'Fashion Week', 'Sanremo Festival',
-  'MALVIE Magazine', 'Studio Creativo', 'Brand Agency', 'Model Agency',
-  'Editorial Press', 'Event Co.', 'Beauty Brand', 'Atelier Mode',
+  'Fashion Week', 'Sanremo Festival', 'MALVIE Magazine',
 ];

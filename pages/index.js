@@ -94,7 +94,7 @@ function useReveal() {
 /* ─── Navbar ──────────────────────────────────────────────────────────────── */
 function Navbar({ solid }) {
   const [open, setOpen] = useState(false);
-  const links = ['Portfolio', 'Servizi', 'Video', 'Contatti'];
+  const links = ['Portfolio', 'Servizi', 'Contatti'];
 
   // Blocca lo scroll del body quando il menu mobile è aperto
   useEffect(() => {
@@ -303,7 +303,8 @@ function Services() {
 
 /* ─── Clients marquee ─────────────────────────────────────────────────────── */
 function Clients() {
-  const doubled = [...CLIENTS, ...CLIENTS];
+  // Ripetuto abbastanza da riempire anche schermi larghi (numero pari: il loop resta continuo)
+  const doubled = Array.from({ length: 8 }, () => CLIENTS).flat();
   return (
     <section className="clients section-pad-sm" id="clienti">
       <div className="clients-track">
@@ -313,61 +314,6 @@ function Clients() {
             <span className="clients-sep">—</span>
           </div>
         ))}
-      </div>
-    </section>
-  );
-}
-
-/* ─── Video ───────────────────────────────────────────────────────────────── */
-function VideoSec() {
-  const [url, setUrl] = useState('');
-  const [vid, setVid] = useState('');
-
-  const load = () => {
-    try {
-      const u = new URL(url.trim());
-      const id = u.hostname.includes('youtu.be')
-        ? u.pathname.slice(1)
-        : u.searchParams.get('v');
-      if (id) { setVid(id); return; }
-    } catch {}
-    alert('URL YouTube non valido.');
-  };
-
-  return (
-    <section className="video-sec section-pad" id="video">
-      <div className="inner video-inner">
-        <div className="reveal" style={{ textAlign: 'center' }}>
-          <div className="s-label" style={{ justifyContent: 'center' }}>Showreel</div>
-          <h2 className="s-title">Video <em>&amp; Reel</em></h2>
-        </div>
-        <div className="video-row reveal d1">
-          <input
-            className="v-input"
-            type="text"
-            placeholder="Incolla un URL YouTube..."
-            value={url}
-            onChange={e => setUrl(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && load()}
-          />
-          <button className="v-btn" onClick={load}>Carica</button>
-        </div>
-        <div className="v-frame reveal d2">
-          {vid ? (
-            <iframe
-              src={`https://www.youtube.com/embed/${vid}?rel=0`}
-              title="Video"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          ) : (
-            <div className="v-empty">
-              <div className="v-empty-icon">▷</div>
-              <div className="v-empty-txt">Incolla un URL YouTube per visualizzare il video</div>
-            </div>
-          )}
-        </div>
       </div>
     </section>
   );
@@ -522,7 +468,6 @@ export default function Home() {
           <Portfolio />
           <Services />
           <Clients />
-          <VideoSec />
           <Contact />
         </main>
         <Footer />

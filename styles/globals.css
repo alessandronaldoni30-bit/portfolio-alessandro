@@ -419,6 +419,9 @@ button { border: none; background: none; font-family: var(--f-body); }
   cursor: pointer;
 }
 .svc-item:hover { background: var(--white); }
+/* Numero di servizi non multiplo di 3: l'ultimo riempie la riga */
+.svc-item:last-child:nth-child(3n+2) { grid-column: span 2; }
+.svc-item:last-child:nth-child(3n+1) { grid-column: span 3; }
 .svc-icon {
   font-size: 20px; color: var(--gold);
   margin-bottom: 20px; display: block;
@@ -437,7 +440,7 @@ button { border: none; background: none; font-family: var(--f-body); }
 .clients { background: var(--white); overflow: hidden; }
 .clients-track {
   display: flex;
-  animation: marquee 22s linear infinite;
+  animation: marquee 60s linear infinite;
   white-space: nowrap;
 }
 .clients-track:hover { animation-play-state: paused; }
@@ -841,6 +844,7 @@ button { border: none; background: none; font-family: var(--f-body); }
   .portfolio-head { flex-direction: column; gap: 24px; align-items: flex-start; }
   .p-grid { column-count: 1; column-gap: 0; }
   .svc-grid { grid-template-columns: 1fr; }
+  .svc-item:last-child { grid-column: auto !important; }
   .intro-facts { flex-wrap: wrap; gap: 28px; }
   .cf-row { grid-template-columns: 1fr; }
   .footer { flex-direction: column; gap: 20px; text-align: center; }
