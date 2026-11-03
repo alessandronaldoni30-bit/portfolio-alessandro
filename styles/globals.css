@@ -827,6 +827,27 @@ button { border: none; background: none; font-family: var(--f-body); }
 .pn-center:hover { border-color: var(--black); color: var(--black); }
 
 /* ─── Responsive ─── */
+
+/* ─── Video ─── */
+.video-sec { background: var(--white); }
+.v-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 340px));
+  justify-content: center;
+  gap: 32px;
+  margin-top: 56px;
+}
+.v-card video {
+  display: block; width: 100%; height: auto;
+  aspect-ratio: 9 / 16; object-fit: cover;
+  background: var(--black);
+}
+.v-card figcaption { padding-top: 16px; }
+.v-name { font-family: var(--f-title); font-size: 1.6rem; font-weight: 400; margin-top: 4px; }
+@media (max-width: 768px) {
+  .v-grid { grid-template-columns: 1fr; gap: 40px; margin-top: 40px; max-width: 360px; margin-left: auto; margin-right: auto; }
+}
+
 @media (max-width: 1024px) {
   .nav, .nav.solid { padding-left: 40px; padding-right: 40px; }
   .section-pad  { padding: 80px 40px; }

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { PROJECTS, HERO_IMAGES, ABOUT_IMAGE, SERVICES, CLIENTS } from '../data/projects';
+import { PROJECTS, HERO_IMAGES, ABOUT_IMAGE, SERVICES, CLIENTS, VIDEOS } from '../data/projects';
 import { img, srcSet, dims } from '../data/img';
 
 /* ─── Cursor ──────────────────────────────────────────────────────────────── */
@@ -94,7 +94,7 @@ function useReveal() {
 /* ─── Navbar ──────────────────────────────────────────────────────────────── */
 function Navbar({ solid }) {
   const [open, setOpen] = useState(false);
-  const links = ['Portfolio', 'Servizi', 'Contatti'];
+  const links = ['Portfolio', 'Video', 'Servizi', 'Contatti'];
 
   // Blocca lo scroll del body quando il menu mobile è aperto
   useEffect(() => {
@@ -271,6 +271,44 @@ function Portfolio() {
                 <span className="p-link">Vedi Progetto →</span>
               </div>
             </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Video ───────────────────────────────────────────────────────────────── */
+function VideoSec() {
+  // Un solo video in riproduzione alla volta
+  const onPlay = e => {
+    document.querySelectorAll('.v-card video').forEach(v => { if (v !== e.target) v.pause(); });
+  };
+  return (
+    <section className="video-sec section-pad" id="video">
+      <div className="inner">
+        <div className="reveal" style={{ textAlign: 'center' }}>
+          <div className="s-label" style={{ justifyContent: 'center' }}>Video</div>
+          <h2 className="s-title">Video <em>&amp; Reel</em></h2>
+        </div>
+        <div className="v-grid">
+          {VIDEOS.map((v, i) => (
+            <figure key={v.id} className={`v-card reveal d${(i % 2) + 1}`}>
+              <video
+                src={v.src}
+                poster={v.poster}
+                preload="none"
+                controls
+                playsInline
+                onPlay={onPlay}
+                width={720}
+                height={1280}
+              />
+              <figcaption>
+                <div className="p-cat">{v.tag}</div>
+                <div className="v-name">{v.title}</div>
+              </figcaption>
+            </figure>
           ))}
         </div>
       </div>
@@ -466,6 +504,7 @@ export default function Home() {
           <Hero />
           <Intro />
           <Portfolio />
+          <VideoSec />
           <Services />
           <Clients />
           <Contact />

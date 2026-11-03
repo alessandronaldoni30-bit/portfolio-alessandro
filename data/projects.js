@@ -536,3 +536,9 @@ export const SERVICES = [
 export const CLIENTS = [
   'Fashion Week', 'Sanremo Festival', 'MALVIE Magazine',
 ];
+
+// Video verticali (file in /public/video, compressi 720x1280 H.264)
+export const VIDEOS = [
+  { id: 'greta', title: 'Greta', tag: 'Brand content · FIT.FE by Fede', src: '/video/greta.mp4', poster: '/video/greta.webp' },
+  { id: 'maddalena', title: 'Maddalena', tag: 'Brand content · Swimwear', src: '/video/maddalena.mp4', poster: '/video/maddalena.webp' },
+];
