@@ -540,6 +540,10 @@ export const CLIENTS = [
 // Video verticali (file in /public/video, compressi 720x1280 H.264)
 export const VIDEOS = [
   { id: 'himorta', title: 'Himorta', tag: 'Vigorsol · Lucca Comics', src: '/video/himorta.mp4', poster: '/video/himorta.webp' },
+  { id: 'intimair', title: 'Lancio Intim.Air', tag: 'Evento beauty · Milano', src: '/video/beauty.mp4', poster: '/video/beauty.webp' },
   { id: 'greta', title: 'Greta', tag: 'Brand content · FIT.FE by Fede', src: '/video/greta.mp4', poster: '/video/greta.webp' },
   { id: 'maddalena', title: 'Maddalena', tag: 'Brand content · Swimwear', src: '/video/maddalena.mp4', poster: '/video/maddalena.webp' },
+  // private: solo nella pagina privata (ci sono minori riconoscibili)
+  { id: 'scuola', title: 'Scuola Attiva', tag: 'Evento sportivo', src: '/video/scuola.mp4', poster: '/video/scuola.webp', private: true },
+  { id: 'ballo', title: 'Ballo ottocentesco', tag: 'Evento', src: '/video/ballo.mp4', poster: '/video/ballo.webp', h: true },
 ];

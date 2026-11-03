@@ -832,7 +832,7 @@ button { border: none; background: none; font-family: var(--f-body); }
 .video-sec { background: var(--white); }
 .v-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 340px));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 280px));
   justify-content: center;
   gap: 32px;
   margin-top: 56px;
@@ -843,6 +843,8 @@ button { border: none; background: none; font-family: var(--f-body); }
   background: var(--black);
 }
 .v-card figcaption { padding-top: 16px; }
+.v-grid-h { max-width: 1100px; margin: 56px auto 0; display: grid; gap: 32px; }
+.v-card.v-h video { aspect-ratio: 16 / 9; }
 .v-name { font-family: var(--f-title); font-size: 1.6rem; font-weight: 400; margin-top: 4px; }
 @media (max-width: 768px) {
   .v-grid { grid-template-columns: 1fr; gap: 40px; margin-top: 40px; max-width: 360px; margin-left: auto; margin-right: auto; }

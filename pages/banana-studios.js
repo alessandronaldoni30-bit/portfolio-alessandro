@@ -3,6 +3,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { PROJECTS, VIDEOS } from '../data/projects';
 import { img, srcSet, dims } from '../data/img';
+import VideoGrid from '../components/VideoGrid';
 
 // Pagina privata per Banana Studios: non indicizzata e non linkata dal menu
 const SELEZIONE = ['brand', 'milano-fashion-week', 'editoriale-clara', 'francesca', 'cristina-studio', 'zanzibar'];
@@ -53,17 +54,7 @@ export default function BananaStudios() {
                 <div className="s-label" style={{ justifyContent: 'center' }}>Video</div>
                 <h2 className="s-title">Brand <em>content</em></h2>
               </div>
-              <div className="v-grid">
-                {VIDEOS.map((v, i) => (
-                  <figure key={v.id} className={`v-card reveal d${(i % 2) + 1}`}>
-                    <video src={v.src} poster={v.poster} preload="none" controls playsInline onPlay={onPlay} width={720} height={1280} />
-                    <figcaption>
-                      <div className="p-cat">{v.tag}</div>
-                      <div className="v-name">{v.title}</div>
-                    </figcaption>
-                  </figure>
-                ))}
-              </div>
+              <VideoGrid videos={VIDEOS} />
             </div>
           </section>
 
