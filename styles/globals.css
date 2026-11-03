@@ -932,3 +932,10 @@ button { border: none; background: none; font-family: var(--f-body); }
 @media (prefers-reduced-motion: reduce) {
   .route-fade, .route-fade.leaving, .hero-slide.active img { animation: none !important; }
 }
+
+/* ─── Pagina selezione privata ─── */
+.sel-head { padding-top: 160px; }
+.sel-intro { margin-top: 20px; color: var(--grey); font-size: 15px; line-height: 1.9; }
+.sel-intro a { color: var(--black); border-bottom: 1px solid var(--grey-light); }
+.sel-contact { background: var(--cream); }
+@media (max-width: 768px) { .sel-head { padding-top: 120px; } }
